@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from "axios";
 
 const Cadastro = () => {
     const [nome, setNome] = useState("")
@@ -10,29 +11,20 @@ const Cadastro = () => {
         event.preventDefault()
 
         try {
-            const resposta = await fetch('http://localhost:3000/api/auth/register', {
-                method: "POST",
-                headers: {
-                    "Content-type": "application/json"
-                },
-                body: JSON.stringify({
-                    nome,
-                    email,
-                    senha
-                })
-            })
-            const dados = await resposta.json();
+            const resposta = await axios.post('http://localhost:3000/api/auth/register', {
 
-            if (!resposta.ok) {
-                throw new Error(dados.erro || "Erro ao cadastrar usuário")
-            }
+                nome,
+                email,
+                senha
+
+            })
             setNome("")
             setEmail("")
             setSenha("")
-            setMensagem(`Usuário ${dados.nome} cadastrado com sucesso!`)
+            setMensagem(`Usuário ${resposta.data.resposta?.nome || nome} cadastrado com sucesso!`)
 
         } catch (error) {
-            setMensagem(error.message)
+            setMensagem(error.response?.data?.erro)
         }
     }
     return (
